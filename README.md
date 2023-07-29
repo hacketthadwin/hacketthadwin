@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @hacketthadwin
+- 👋 Hi, I’m Adarsh
 - 👀 I’m interested in programming
 - 🌱 I’m currently learning c language
 - 💞️ I’m looking to collaborate on ...
