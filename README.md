@@ -2,7 +2,7 @@
 
 ###
 
-<p align="left">🎓 I am a student at the National Institute of Technology, Raipur.<br>💡 I have a strong interest in exploring new technologies and leveraging them to develop efficient and impactful solutions.</p>
+<p align="left">🎓 I am currently a student at the National Institute of Technology, Raipur.<br>💡 I have a strong interest in exploring new technologies and leveraging them to develop efficient and impactful solutions.</p>
 
 ###
 
