@@ -52,7 +52,7 @@
 
 <br clear="both">
 
-<img src="https://raw.githubusercontent.com/hacketthadwin/hacketthadwin/output/snake.svg" alt="Snake animation" />
+![](./profile-3d-contrib/profile-green-animate.svg)
 
 
 ###
