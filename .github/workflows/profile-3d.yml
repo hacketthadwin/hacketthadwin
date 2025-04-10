@@ -18,6 +18,7 @@ jobs:
           USERNAME: hacketthadwin
           TRANSPARENT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_PATH: ./profile-3d-contrib/profile-transparent.svg
 
       - name: Commit & Push
         run: |
