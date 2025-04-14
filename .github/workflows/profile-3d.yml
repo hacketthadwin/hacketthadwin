@@ -18,37 +18,12 @@ jobs:
           USERNAME: hacketthadwin
           TRANSPARENT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OUTPUT_PATH: ./profile-3d-contrib/profile-night-green.svg
-
-      - name: Debug File Existence
-        run: |
-          ls -la ./profile-3d-contrib/ || echo "Directory or file not found"
-
-      - name: Ensure Transparent Background
-        run: |
-          sleep 2
-          if [ -f "./profile-3d-contrib/profile-night-green.svg" ]; then
-            python -c "
-import xml.etree.ElementTree as ET
-svg_file = './profile-3d-contrib/profile-night-green.svg'
-tree = ET.parse(svg_file)
-root = tree.getroot()
-for rect in root.findall('.//{http://www.w3.org/2000/svg}rect[@class=\"fill-bg\"]'):
-    rect.set('fill', 'none')
-if 'style' not in root.attrib:
-    root.set('style', '')
-root.set('style', root.get('style') + 'background: transparent;')
-tree.write(svg_file, encoding='utf-8', xml_declaration=True)
-            "
-          else
-            echo "Error: SVG file not found after generation."
-            exit 1
-          fi
+          OUTPUT_PATH: ./profile-3d-contrib/profile-transparent.svg
 
       - name: Commit & Push
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add .
-          git commit -m "Add 3D contribution graph with transparent background"
+          git commit -m "Add 3D contribution graph"
           git push
