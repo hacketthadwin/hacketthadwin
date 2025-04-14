@@ -1,9 +1,9 @@
-name: GitHub-Profile-3D-Contrib
+name: Generate Transparent Profile SVG
 
 on:
-  workflow_dispatch: # Run manually anytime
+  workflow_dispatch: # Allows manual triggering
   schedule:
-    - cron: "0 0 * * *" # Run daily at midnight UTC
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
 
 jobs:
   build:
@@ -18,7 +18,30 @@ jobs:
       - name: Generate 3D Contribution Graph
         uses: yoshi389111/github-profile-3d-contrib@main
         env:
-          USERNAME: hacketthadwin
+          USERNAME: hacketthadwin # Replace with your GitHub username
           TRANSPARENT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           output_dir: ./profile-3d-contrib
+
+      - name: Wait for file generation
+        run: sleep 5
+
+      - name: Check if source file exists
+        run: |
+          if [ -f "./profile-3d-contrib/profile-night-green.svg" ]; then
+            echo "Source file found."
+          else
+            echo "Error: profile-night-green.svg not found!"
+            exit 1
+          fi
+
+      - name: Create transparent SVG
+        run: python make_transparent.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add ./profile-3d-contrib/profile-transparent.svg
+          git commit -m "Add transparent profile SVG" || echo "No changes to commit"
+          git push
