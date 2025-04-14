@@ -18,24 +18,26 @@ jobs:
           USERNAME: hacketthadwin
           TRANSPARENT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OUTPUT_PATH: ./profile-3d-contrib/profile-transparent.svg
+          OUTPUT_PATH: ./profile-3d-contrib/profile-night-green.svg  # Match the README file
+
+      - name: Debug File Existence
+        run: |
+          ls -la ./profile-3d-contrib/ || echo "Directory or file not found"
 
       - name: Ensure Transparent Background
         run: |
-          # Wait briefly to ensure file is written
           sleep 2
-          # Check if file exists
-          if [ -f "./profile-3d-contrib/profile-transparent.svg" ]; then
+          if [ -f "./profile-3d-contrib/profile-night-green.svg" ]; then
             python -c "
             import xml.etree.ElementTree as ET
-            svg_file = './profile-3d-contrib/profile-transparent.svg'
+            svg_file = './profile-3d-contrib/profile-night-green.svg'
             tree = ET.parse(svg_file)
             root = tree.getroot()
-            # Remove background rect or set fill to none
             for rect in root.findall('.//{http://www.w3.org/2000/svg}rect[@class=\"fill-bg\"]'):
                 rect.set('fill', 'none')
-            # Ensure SVG has transparent style
-            root.set('style', 'background: transparent;')
+            if 'style' not in root.attrib:
+                root.set('style', '')
+            root.set('style', root.get('style') + 'background: transparent;')
             tree.write(svg_file, encoding='utf-8', xml_declaration=True)
             "
           else
