@@ -18,7 +18,7 @@ jobs:
           USERNAME: hacketthadwin
           TRANSPARENT: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OUTPUT_PATH: ./profile-3d-contrib/profile-night-green.svg  # Match the README file
+          OUTPUT_PATH: ./profile-3d-contrib/profile-night-green.svg
 
       - name: Debug File Existence
         run: |
@@ -29,16 +29,16 @@ jobs:
           sleep 2
           if [ -f "./profile-3d-contrib/profile-night-green.svg" ]; then
             python -c "
-            import xml.etree.ElementTree as ET
-            svg_file = './profile-3d-contrib/profile-night-green.svg'
-            tree = ET.parse(svg_file)
-            root = tree.getroot()
-            for rect in root.findall('.//{http://www.w3.org/2000/svg}rect[@class=\"fill-bg\"]'):
-                rect.set('fill', 'none')
-            if 'style' not in root.attrib:
-                root.set('style', '')
-            root.set('style', root.get('style') + 'background: transparent;')
-            tree.write(svg_file, encoding='utf-8', xml_declaration=True)
+import xml.etree.ElementTree as ET
+svg_file = './profile-3d-contrib/profile-night-green.svg'
+tree = ET.parse(svg_file)
+root = tree.getroot()
+for rect in root.findall('.//{http://www.w3.org/2000/svg}rect[@class=\"fill-bg\"]'):
+    rect.set('fill', 'none')
+if 'style' not in root.attrib:
+    root.set('style', '')
+root.set('style', root.get('style') + 'background: transparent;')
+tree.write(svg_file, encoding='utf-8', xml_declaration=True)
             "
           else
             echo "Error: SVG file not found after generation."
