@@ -34,7 +34,7 @@
 <img width="16" />
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" height="30" alt="redux logo" />
 <img width="16" />
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" height="30" alt="express logo" style="filter: invert(1);" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Expressjs.png" height="30" alt="express logo" />
 <img width="16" />
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" height="30" alt="nodejs logo" />
 <img width="16" />
