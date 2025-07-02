@@ -11,7 +11,7 @@
   <img src="https://github-readme-stats.vercel.app/api/top-langs?username=hacketthadwin&locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false" height="150" alt="languages graph"  />
 </div>
 
-<img align="right" height="150" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZms1cHMza3d5aWx2NXpkYzh1YjZvN2F1dXFiZTM0c2lxamc3djdhcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/4ilFRqgbzbx4c/giphy.gif"  />
+<img align="right" height="150" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3c3VkOHE0eHF0OGZqMzlrMzFqNnFzb3h4MmQ3YjkyOGF0YW52cDk3aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PZrjGkr334fXa/giphy.gif"  />
 
 ###
 
