@@ -81,7 +81,7 @@
 ###
 
 <div align="center">
-  <img src="https://profile-counter.glitch.me/hacketthadwin/count.svg?"  />
+<!--   <img src="https://profile-counter.glitch.me/hacketthadwin/count.svg?"  /> -->
 </div>
 
 ###
