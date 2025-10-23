@@ -56,19 +56,26 @@
 
 </div>
 
-
 ###
 
-<div align="left">
-  <a href="https://www.instagram.com/_not_so_adarsh/" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=Instagram&logo=instagram&label=&color=E4405F&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="instagram logo"  />
-  <a href="https://www.linkedin.com/in/hacketthadwin/" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=LinkedIn&logo=linkedin&label=&color=0077B5&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="linkedin logo"  />
+<p align="left">You can also connect with me directly via <strong>npx</strong>.</p>
+<p align="left">Just hit this command in terminal 👇</p>
+
+```bash
+npx hacketthadwin
+```
+
+<div style="margin: 20px 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+  <a href="mailto:adarsh12345678jha@gmail.com" target="_blank">
+    <img src="https://img.shields.io/badge/Email-adarsh12345678jha@gmail.com-c14438?style=for-the-badge&logo=gmail&logoColor=white" alt="Email">
+  </a>
+  <a href="https://www.linkedin.com/in/hacketthadwin" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-hacketthadwin-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+  </a>
+  <a href="https://adarshjha.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Portfolio-Adarsh%20Jha-4CAF50?style=for-the-badge&logo=appveyor&logoColor=white" alt="Portfolio">
   </a>
 </div>
-
-###
-
 
 
 ###
