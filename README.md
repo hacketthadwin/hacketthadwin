@@ -59,7 +59,7 @@
 ###
 
 <p align="left">You can also connect with me directly via <strong>Terminal</strong>.</p>
-<p align="left">Just hit this command in terminal 👇</p>
+<p align="left">Just hit this command 👇</p>
 
 ```bash
 npx hacketthadwin
