@@ -65,17 +65,18 @@
 npx hacketthadwin
 ```
 
-<div style="margin: 20px 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+<div style="margin: 20px 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
   <a href="mailto:adarsh12345678jha@gmail.com" target="_blank">
-    <img src="https://img.shields.io/badge/Email-adarsh12345678jha@gmail.com-c14438?style=for-the-badge&logo=gmail&logoColor=white" alt="Email">
+    <img src="https://img.shields.io/badge/-Email-c14438?style=for-the-badge&logo=gmail&logoColor=white&label=" alt="Email">
   </a>
   <a href="https://www.linkedin.com/in/hacketthadwin" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-hacketthadwin-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+    <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&label=" alt="LinkedIn">
   </a>
   <a href="https://adarshjha.vercel.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Portfolio-Adarsh%20Jha-4CAF50?style=for-the-badge&logo=appveyor&logoColor=white" alt="Portfolio">
+    <img src="https://img.shields.io/badge/-Portfolio-4CAF50?style=for-the-badge&logo=google-chrome&logoColor=white&label=" alt="Portfolio">
   </a>
 </div>
+
 
 
 ###
