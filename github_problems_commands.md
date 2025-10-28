@@ -1,182 +1,469 @@
-Git Problems Log
-=================
 
-This file documents the git-related problems encountered during recovery and the exact commands used to inspect/repair the repository. Each entry lists the command, purpose, problem observed, and how it was resolved (or next steps).
+# Git Problems Log
 
-1) Backup before recovery
--------------------------
-Command:
-  robocopy my-app my-app-backup /MIR
-Use / purpose:
-  Make a complete filesystem mirror backup of the repository before running recovery commands.
-Problem faced:
-  N/A (precaution)
-Resolution:
-  Backup created: my-app-backup (prevents further data loss).
+This document records each git-related problem encountered during the recovery process. Every numbered entry below follows the same structure so it's easy to scan:
 
-2) Check repository status and branches
---------------------------------------
-Commands:
-  git status --porcelain --untracked-files=all
-  git branch --show-current
-  git branch -a
-  git remote -v
-Use / purpose:
-  Inspect working tree, current branch, all local/remote branches and remote URL.
-Problem faced:
-  Files were missing/changed unexpectedly after an attempted push; needed to know current state.
-Resolution:
-  Outputs showed modified/deleted and untracked files which guided further inspection.
+- Command(s): the exact commands used (fenced code block)
+- Use / Purpose: why the commands were run
+- Problem faced: what went wrong or what we were looking for
+- Resolution / Outcome: how it was resolved or what we learned
 
-3) Find a recovery commit (reflog)
----------------------------------
-Command:
-  git reflog -n 200
-Use / purpose:
-  Search the reflog for recent operations and commits (including lost commits from rebases/resets).
-Problem faced:
-  Need to locate the last commit that contained the lost work.
-Outcome:
-  Found commit `d47a246` with message "Safe backup after rebase issue resolved" which contained the recovered files.
+---
 
-4) Inspect commits and commit contents
---------------------------------------
-Commands:
-  git log --oneline --graph --decorate -n 50
-  git show --name-only <commit-hash>
-  type .git\logs\HEAD  (inspect raw logs)
-Use / purpose:
-  Confirm the commit(s) and list files changed in the candidate recovered commit.
-Problem faced:
-  Needed to make sure the identified commit indeed contained the files to recover.
-Outcome:
-  Verified `d47a246` contained the expected files (many added/modified files).
+## 1) Backup before recovery
 
-5) Create a safety branch for the recovery commit
--------------------------------------------------
-Command:
-  git checkout -b recovered-work
-Use / purpose:
-  Create a named branch pointing at the current HEAD (the recovered commit) so we can safely inspect and restore.
-Problem faced:
-  Avoid accidental overwrites on main; preserve recovered commit.
-Resolution:
-  `recovered-work` branch created and checked out.
+**Command(s)**
+```powershell
+robocopy my-app my-app-backup /MIR
+```
 
-6) Restore working tree to the recovered commit
-----------------------------------------------
-Command:
-  git reset --hard HEAD
-Use / purpose:
-  Reset working tree to the state of the current branch HEAD (recovered commit) to restore files.
-Problem faced:
-  Risky if run without a backup, but safe because a filesystem backup and branch were created.
-Resolution:
-  Working tree restored to the recovered commit (files returned).
+**Use / Purpose**
 
-7) Push recovery branch to remote (preserve on GitHub)
------------------------------------------------------
-Command:
-  git push origin recovered-work
-Use / purpose:
-  Store the recovered commit on GitHub so it's not lost and can be reviewed or merged.
-Problem faced:
-  None; branch pushed successfully.
+Create a full filesystem mirror of the repository to ensure we can recover if further operations go wrong.
 
-8) Inspect for lost/unreachable objects
---------------------------------------
-Commands:
-  git fsck --lost-found
-  dir .git\lost-found  (list recovered blobs)
-Use / purpose:
-  Try to find unreachable blobs or commits if some content was not part of commits.
-Problem faced:
-  No helpful unreachable blobs were produced (not required because we had the reflog commit).
-Outcome:
-  Proceeded with recovered commit found in reflog.
+**Problem faced**
 
-9) Try to merge recovered branch into main (initial attempt)
-----------------------------------------------------------
-Commands:
-  git fetch origin
-  git checkout main
-  git pull origin main
-  git merge --no-ff recovered-work -m "Merge recovered-work: restore lost work (d47a246)"
-Use / purpose:
-  Merge recovered changes into main locally.
-Problem faced:
-  Git reported "fatal: refusing to merge unrelated histories" because branches had different roots.
-Resolution:
-  Decided not to force-unrelated merge; used a safer branch-based approach instead (see next steps).
+Precautionary step — no problem encountered.
 
-10) Create a branch from current main and apply recovered files on top
---------------------------------------------------------------------
-Commands:
-  git checkout -b merge-main-with-recovery origin/main
-  git checkout recovered-work -- .
-  git add -A
-  git commit -m "Restore recovered-work content on top of main (d47a246)"
-  git push -u origin merge-main-with-recovery
-Use / purpose:
-  This copies the recovered working tree into a new branch based off the current `main` (no history merge). This creates a normal commit on top of main with the recovered files.
-Problem faced:
-  Needed a way to bring recovered content into main without rewriting history or forcing unrelated merges.
-Outcome:
-  Branch `merge-main-with-recovery` created and pushed; a PR can be opened/merged safely on GitHub.
+**Resolution / Outcome**
 
-11) Inspect differences between origin/main and recovered-work
------------------------------------------------------------
-Command:
-  git diff --name-status origin/main..recovered-work
-Use / purpose:
-  See which files differ. This explained why the PR only updated the drizzle files.
-Problem faced:
-  Only the drizzle migration files appeared as differences (D), meaning most recovered content was already equivalent to main.
-Outcome:
-  Realized that only drizzle changes needed merging; other recovered files were already present or identical on main.
+Backup created at `my-app-backup`.
 
-12) Alternative recovery commands used or suggested
---------------------------------------------------
-- Check for stashes:
-  git stash list
-  git stash show -p stash@{0}
-  git stash apply stash@{0}
-Use / purpose:
-  In case work had been stashed prior to the incident.
+---
 
-- Inspect specific commits / blobs:
-  git show <blob-or-commit-hash>
-  git fsck --full --no-reflogs --unreachable
-Use / purpose:
-  Low-level recovery when commits are not reachable.
+## 2) Check repository status and branches
 
-13) Final merge options (what we recommended)
---------------------------------------------
-Option A (Recommended): Create PR from `merge-main-with-recovery` → `main` and merge via GitHub UI.
-  Commands to sync locally after merge:
-    git checkout main
-    git pull origin main
+**Command(s)**
+```bash
+git status --porcelain --untracked-files=all
+git branch --show-current
+git branch -a
+git remote -v
+```
 
-Option B (CLI merge): Merge branch into main locally and push
-  git checkout main
-  git pull origin main
-  git merge --no-ff merge-main-with-recovery -m "Merge recovered work"
-  git push origin main
+**Use / Purpose**
 
-Option C (Rebase recovered onto main) — advanced
-  git checkout recovered-work
-  git rebase origin/main
-  # resolve rebase conflicts if any; then:
-  git checkout main
-  git merge recovered-work
-  git push origin main
+Inspect the working tree, current branch, and local/remote branches to understand repository state.
 
-14) Safety reminders used during recovery
-----------------------------------------
-- Always create a filesystem backup before destructive commands (robocopy used).
-- Create a safety branch (recovered-work) pointing at the found commit before any resets.
-- Prefer safe PR merges to forceful history rewrites. If force is needed, use --force-with-lease to reduce accidental clobbering.
+**Problem faced**
 
-If you want this converted into a small shell script to reproduce the non-destructive recovery steps, say so and I'll generate it.
+Files were missing/changed after an attempted push; we needed to see what was different locally vs remote.
+
+**Resolution / Outcome**
+
+The output identified modified/deleted and untracked files and guided the next steps (reflog, fsck).
+
+---
+
+## 3) Find a recovery commit (reflog)
+
+**Command(s)**
+```bash
+git reflog -n 200
+```
+
+**Use / Purpose**
+
+Search recent operations (including commits that may no longer be reachable from any branch) to find the last point where the lost work existed.
+
+**Problem faced**
+
+Needed to locate the most recent commit containing the lost work.
+
+**Resolution / Outcome**
+
+Found commit `d47a246` with message "Safe backup after rebase issue resolved" which included the recovered files.
+
+---
+
+## 4) Inspect commits and commit contents
+
+**Command(s)**
+```bash
+git log --oneline --graph --decorate -n 50
+git show --name-only <commit-hash>
+type .git\\logs\\HEAD   # Windows: inspect raw reflog entries
+```
+
+**Use / Purpose**
+
+Confirm the recovered commit and list which files it changed or added.
+
+**Problem faced**
+
+Need to verify that the identified commit indeed contained all the expected files.
+
+**Resolution / Outcome**
+
+Verified that `d47a246` contained many added/modified files matching the lost work.
+
+---
+
+## 5) Create a safety branch for the recovery commit
+
+**Command(s)**
+```bash
+git checkout -b recovered-work
+```
+
+**Use / Purpose**
+
+Create a named branch pointing at the current HEAD (which is the recovered commit) so we can work safely without altering other refs.
+
+**Problem faced**
+
+Avoid overwriting `main` or losing the recovered commit during further operations.
+
+**Resolution / Outcome**
+
+`recovered-work` branch created and checked out.
+
+---
+
+## 6) Restore working tree to the recovered commit
+
+**Command(s)**
+```bash
+git reset --hard HEAD
+```
+
+**Use / Purpose**
+
+Reset the working tree to the state of the current branch HEAD to bring the recovered files back into the filesystem.
+
+**Problem faced**
+
+Risky if done without a backup (we had a filesystem backup).
+
+**Resolution / Outcome**
+
+Working tree restored to the recovered commit; files returned.
+
+---
+
+## 7) Push recovery branch to remote (preserve on GitHub)
+
+**Command(s)**
+```bash
+git push origin recovered-work
+```
+
+**Use / Purpose**
+
+Store the recovered commit on GitHub to prevent further local-only loss.
+
+**Problem faced**
+
+None — the push succeeded.
+
+**Resolution / Outcome**
+
+Remote branch `recovered-work` contains the recovered commit.
+
+---
+
+## 8) Inspect for lost/unreachable objects
+
+**Command(s)**
+```bash
+git fsck --lost-found
+dir .git\\lost-found   # Windows
+```
+
+**Use / Purpose**
+
+Try to locate unreachable blobs/objects if some work had not been committed.
+
+**Problem faced**
+
+No useful unreachable blobs were produced — we already had the reflog commit, which was sufficient.
+
+**Resolution / Outcome**
+
+Moved forward with the `d47a246` reflog commit.
+
+---
+
+## 9) Try to merge recovered branch into main (initial attempt)
+
+**Command(s)**
+```bash
+git fetch origin
+git checkout main
+git pull origin main
+git merge --no-ff recovered-work -m "Merge recovered-work: restore lost work (d47a246)"
+```
+
+**Use / Purpose**
+
+Attempt a normal merge of recovered content into `main`.
+
+**Problem faced**
+
+Git reported: "fatal: refusing to merge unrelated histories" — branches appeared to have distinct roots (often happens after force-pushes or an unrelated import).
+
+**Resolution / Outcome**
+
+Stopped and chose a safer approach: create a new branch based on `origin/main` and copy recovered files into it (next step).
+
+---
+
+## 10) Create a branch from current main and apply recovered files on top
+
+**Command(s)**
+```bash
+git checkout -b merge-main-with-recovery origin/main
+git checkout recovered-work -- .
+git add -A
+git commit -m "Restore recovered-work content on top of main (d47a246)"
+git push -u origin merge-main-with-recovery
+```
+
+**Use / Purpose**
+
+Create a clean commit on top of `main` that contains the recovered working tree (no history rewriting).
+
+**Problem faced**
+
+Needed a way to bring recovered content into `main` without rewriting history or forcing unrelated merges.
+
+**Resolution / Outcome**
+
+Branch `merge-main-with-recovery` created and pushed. A PR was opened so the changes could be merged safely via GitHub UI.
+
+---
+
+## 11) Inspect differences between origin/main and recovered-work
+
+**Command(s)**
+```bash
+git diff --name-status origin/main..recovered-work
+```
+
+**Use / Purpose**
+
+Find which files actually differed so the PR contents could be validated.
+
+**Problem faced**
+
+Only drizzle migration SQL files showed up as differences (deleted), meaning most recovered files were already present or identical on `main`.
+
+**Resolution / Outcome**
+
+Confirmed only the migration files required attention; other recovered content was already on `main`.
+
+---
+
+## 12) Alternative recovery commands used or suggested
+
+**Commands (stashes)**
+```bash
+git stash list
+git stash show -p stash@{0}
+git stash apply stash@{0}
+```
+
+**Use / Purpose**
+
+Check for any stashed changes that may contain the lost work.
+
+**Commands (low-level inspect)**
+```bash
+git show <blob-or-commit-hash>
+git fsck --full --no-reflogs --unreachable
+```
+
+**Use / Purpose**
+
+Inspect unreachable objects or specific blobs when commits are not reachable via branch refs.
+
+**Problem faced / Outcome**
+
+Useful when commits are not in refs; in this case the reflog commit was sufficient and low-level recovery wasn't needed.
+
+---
+
+## 13) Final merge options (recommended approaches)
+
+**Option A (Recommended)** — PR merge via GitHub UI
+
+Create a PR from `merge-main-with-recovery` → `main`, review, and merge. Then sync locally:
+
+```bash
+git checkout main
+git pull origin main
+```
+
+**Option B (CLI merge)**
+
+```bash
+git checkout main
+git pull origin main
+git merge --no-ff merge-main-with-recovery -m "Merge recovered work"
+git push origin main
+```
+
+**Option C (Rebase recovered onto main) — advanced**
+
+```bash
+git checkout recovered-work
+git rebase origin/main
+# resolve rebase conflicts if any
+git checkout main
+git merge recovered-work
+git push origin main
+```
+
+Choose A for the safest, reviewable flow.
+
+---
+
+## 14) Safety reminders used during recovery
+
+- Always create a filesystem backup before destructive commands (`robocopy`).
+- Create a safety branch (`recovered-work`) pointing at the found commit before any resets.
+- Prefer safe PR merges to forceful history rewrites. If force is needed, use `--force-with-lease` instead of a plain `--force`.
+
+If you'd like, I can convert the non-destructive sequence (steps 1 → 10) into a PowerShell script you can run locally. Want that?
+
+---
+
+---
+
+## Appendix — Push local changes to GitHub (start → finish)
+
+This is a practical, step-by-step workflow for pushing local work to GitHub, plus common problems you may hit and how to resolve them.
+
+### Typical workflow (safe, recommended)
+
+1) Check current state
+
+```bash
+git status
+git branch --show-current
+```
+
+Why: see what branch you're on and whether there are uncommitted changes.
+
+Common problems:
+- "nothing to commit" — no changes staged
+- Untracked files you meant to include
+
+2) Stage changes
+
+```bash
+git add <file1> <file2>
+# or all changes:
+git add -A
+```
+
+3) Commit
+
+```bash
+git commit -m "A clear, concise message describing the change"
+```
+
+Problems:
+- pre-commit hooks fail — run the hook commands locally (lint/tests), fix issues
+- large files rejected by Git — consider Git LFS
+
+4) Sync remote (recommended: rebase workflow to minimize merge commits)
+
+```bash
+git fetch origin
+# If working on feature branch (recommended):
+git rebase origin/main
+# or, if you prefer merge:
+git merge origin/main
+```
+
+Why: bring your branch up-to-date with remote before pushing to avoid non-fast-forward errors.
+
+Problems and fixes:
+- Merge conflicts during rebase/merge
+	- Resolve conflicts in files, then:
+		```bash
+		git add <resolved-files>
+		git rebase --continue   # if rebasing
+		# or
+		git commit              # if merging and a commit is required
+		```
+- "refusing to merge unrelated histories"
+	- Occurs when histories don't share a common root (e.g., imported repo). Use this only if you intentionally want to combine histories:
+		```bash
+		git merge origin/main --allow-unrelated-histories
+		```
+	- Prefer creating a new branch and copying files instead of forcing unrelated merges.
+
+5) Push your branch
+
+```bash
+git push -u origin HEAD
+```
+
+If pushing to `main` directly (only when appropriate):
+
+```bash
+git push origin main
+```
+
+Common push problems:
+- "non-fast-forward" / rejected
+	- Usually because remote has new commits. Fix by fetching and rebasing/merging as in step 4.
+- Authentication issues (403/401)
+	- Check your Git remote URL (HTTPS vs SSH) and credential manager. For HTTPS, make sure a valid PAT (personal access token) is configured when required.
+- Large file errors
+	- Use Git LFS or remove the file from history.
+- Branch protected by policy
+	- Create a PR; a direct push may be blocked by branch protection rules.
+
+6) Open a Pull Request (recommended)
+
+Create a PR from your branch to `main` on GitHub. Add reviewers and CI will run.
+
+7) After merge — sync your local main
+
+```bash
+git checkout main
+git pull origin main
+```
+
+### Quick troubleshooting commands
+
+- Show differences between your branch and remote main:
+
+```bash
+git fetch origin
+git log --oneline --graph --decorate origin/main..HEAD
+git diff --name-status origin/main..HEAD
+```
+
+- Abort a failing rebase:
+
+```bash
+git rebase --abort
+```
+
+- Restore working tree from last commit (dangerous if you have uncommitted work):
+
+```bash
+git reset --hard HEAD
+```
+
+- Undo a bad local commit while keeping changes staged:
+
+```bash
+git reset --soft HEAD~1
+```
+
+### Common pitfalls (summary) and short fixes
+
+- Conflicts during pull/rebase: resolve files, add, and continue rebase/merge.
+- Local branch differs from remote (diverged): fetch & rebase/merge, then push.
+- Pre-commit hooks block commit: run the hook locally, fix issues, re-run commit.
+- CI failures after PR: fix the failing tests or lint errors, push new commits to the PR branch.
+- Force pushing: avoid unless absolutely necessary. If used, prefer `--force-with-lease`.
+
+---
 
 End of log.
