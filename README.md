@@ -2,7 +2,7 @@
 
 ###
 
-<p align="left">🎓 I am currently a student at the National Institute of Technology, Raipur.<br>💡 I have a strong interest in exploring new technologies and leveraging them to develop efficient and impactful solutions.</p>
+<p align="left"> I am currently a student at the National Institute of Technology, Raipur.<br> I have a strong interest in exploring new technologies and leveraging them to develop efficient and impactful solutions.</p>
 
 ###
 
@@ -11,7 +11,7 @@
   <img src="https://github-readme-stats.vercel.app/api/top-langs?username=hacketthadwin&locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false" height="150" alt="languages graph"  />
 </div> -->
 
-<img align="right" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3c3VkOHE0eHF0OGZqMzlrMzFqNnFzb3h4MmQ3YjkyOGF0YW52cDk3aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PZrjGkr334fXa/giphy.gif" width="150" height="150" />
+<!-- <img align="right" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3c3VkOHE0eHF0OGZqMzlrMzFqNnFzb3h4MmQ3YjkyOGF0YW52cDk3aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PZrjGkr334fXa/giphy.gif" width="150" height="150" />
 
 ###
 
@@ -54,7 +54,7 @@
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" height="30" width="30" alt="mongodb" />
   <img width="10"/>
 
-</div>
+</div> -->
 
 ###
 
